@@ -2,6 +2,7 @@ package com.warh.alarmahablante.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.Instant
 import java.util.*
 
 abstract class Alarma {
@@ -9,6 +10,7 @@ abstract class Alarma {
     abstract var nombre: String
     abstract var descripcion: String
     abstract val fechaCreacion: Date
+    abstract var habilitada: Boolean
 }
 
 @Entity(tableName = "alarma_repetitiva")
@@ -18,6 +20,7 @@ data class AlarmaRepetitiva(
     override var nombre: String,
     override var descripcion: String,
     override var fechaCreacion: Date,
+    override var habilitada: Boolean,
     var dias: List<Int>,
     var hora: String,
 ): Alarma()
@@ -29,5 +32,6 @@ data class AlarmaUnica(
     override var nombre: String,
     override var descripcion: String,
     override var fechaCreacion: Date,
+    override var habilitada: Boolean,
     var fecha: Date
 ): Alarma()

@@ -15,7 +15,11 @@ import java.util.*
 
 @Composable
 fun AlarmaRepetitivaCardView(alarma: AlarmaRepetitiva, accionCardClick: () -> Unit) {
-    val colorTexto = Color.Black
+    val alfaAlarma = if (alarma.habilitada) 1f else 0.5f
+    val colorTexto = Color.Black.copy(alfaAlarma)
+    val colorFondoSecundario = MaterialTheme.colors.secondary.copy(alfaAlarma)
+    val colorFondoSecundarioVariante = MaterialTheme.colors.secondaryVariant.copy(alfaAlarma)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -23,12 +27,11 @@ fun AlarmaRepetitivaCardView(alarma: AlarmaRepetitiva, accionCardClick: () -> Un
             .clickable { accionCardClick() },
         elevation = 10.dp,
         shape = MaterialTheme.shapes.medium,
-        backgroundColor = MaterialTheme.colors.secondary
     ) {
         Column {
             Row(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.secondaryVariant)
+                    .background(colorFondoSecundarioVariante)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -37,20 +40,20 @@ fun AlarmaRepetitivaCardView(alarma: AlarmaRepetitiva, accionCardClick: () -> Un
                 Text("#R${alarma.id}", color = colorTexto)
             }
             Surface(
-                color = MaterialTheme.colors.secondary
+                color = colorFondoSecundario
             ){
                 Column(
                     modifier = Modifier.padding(10.dp)
                 ) {
                     Text(alarma.descripcion, color = colorTexto)
-                    Divider(Modifier.padding(vertical = 10.dp), thickness = 1.dp, color = Color.Black)
+                    Divider(Modifier.padding(vertical = 10.dp), thickness = 1.dp, color = colorTexto)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ){
                         alarma.dias.forEachIndexed { indice, habilitada ->
-                            Circle(indice, habilitada == 1)
+                            Circle(indice, habilitada == 1, alarma.habilitada, esClickable = false)
                         }
                         Text(alarma.hora, color = colorTexto)
                     }
@@ -64,6 +67,6 @@ fun AlarmaRepetitivaCardView(alarma: AlarmaRepetitiva, accionCardClick: () -> Un
 @Composable
 fun AlarmaRepetitivaCardViewPreview(){
     MaterialTheme {
-        AlarmaRepetitivaCardView(AlarmaRepetitiva(1, "NOMBRE", "DESCRIPCION", Date(), listOf(0,0,0,0,1,1,1), "10:00")) {}
+        AlarmaRepetitivaCardView(AlarmaRepetitiva(1, "NOMBRE", "DESCRIPCION", Date(), true, listOf(0,0,0,0,1,1,1), "10:00")) {}
     }
 }

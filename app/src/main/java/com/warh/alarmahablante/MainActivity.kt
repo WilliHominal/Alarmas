@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
 fun NavigationHost(viewModel: AlarmaViewModel){
     val navController = rememberNavController()
 
+    //TODO Pasar las rutas a una sealed class
     NavHost(navController = navController, startDestination = "AlarmasGuardadas"){
         composable("AlarmasGuardadas") { AlarmasGuardadasScreen(navController = navController, viewModel = viewModel) }
         composable("ConfigurarAlarma") { ConfigurarAlarmaScreen(navController = navController, viewModel = viewModel) }

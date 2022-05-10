@@ -169,6 +169,7 @@ fun ConfigurarAlarmaScreen(navController: NavController, viewModel: AlarmaViewMo
                                 nombre = nombreAlarma,
                                 descripcion = descripcionAlarma,
                                 fechaCreacion = Date(),
+                                habilitada = true,
                                 dias = diasRepetitiva,
                                 hora = horaAlarma,
                             )
@@ -178,11 +179,13 @@ fun ConfigurarAlarmaScreen(navController: NavController, viewModel: AlarmaViewMo
                                 nombre = nombreAlarma,
                                 descripcion = descripcionAlarma,
                                 fechaCreacion = Date(),
+                                habilitada = true,
                                 fecha = stringToDate(diaUnica, horaAlarma)
                             )
                     viewModel.agregarAlarma(alarmaTemp)
                     Toast.makeText(context, "Alarma agregada", Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
+                    //TODO enviar notificacion con alarm manager para que suene alarma
                 }
             }
         }

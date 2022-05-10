@@ -20,24 +20,46 @@ import com.warh.alarmahablante.model.AlarmaRepetitiva
 import com.warh.alarmahablante.model.AlarmaUnica
 import com.warh.alarmahablante.ui.components.AlarmaRepetitivaCardView
 import com.warh.alarmahablante.ui.components.AlarmaUnicaCardView
+import com.warh.alarmahablante.ui.components.CustomAlertDialog
 import com.warh.alarmahablante.ui.components.CustomTopBar
 import com.warh.alarmahablante.viewmodel.AlarmaViewModel
 
 @Composable
 fun AlarmasGuardadasScreen(navController: NavController, viewModel: AlarmaViewModel) {
 
-    var alarmas by remember { mutableStateOf(setOf<Alarma>()) }
+    var alarmas by remember { mutableStateOf(listOf<Alarma>()) }
+
+    var dialogoAbierto by remember { mutableStateOf(false) }
+    var alarmaSeleccionada by remember { mutableStateOf<Alarma?>(null) }
 
     viewModel.listaAlarmasRepetitivas.observe( LocalLifecycleOwner.current ){
-        val mutableSet = alarmas.toMutableSet()
+        val mutableSet: MutableList<Alarma> = alarmas.filterIsInstance<AlarmaUnica>().toMutableList()
         mutableSet.addAll(it)
-        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }.toSet()
+        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }
     }
 
     viewModel.listaAlarmasUnicas.observe( LocalLifecycleOwner.current ){
-        val mutableSet = alarmas.toMutableSet()
+        val mutableSet: MutableList<Alarma> = alarmas.filterIsInstance<AlarmaRepetitiva>().toMutableList()
         mutableSet.addAll(it)
-        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }.toSet()
+        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }
+    }
+
+    if (dialogoAbierto) {
+        CustomAlertDialog(
+            accionCerrar = { dialogoAbierto = false },
+            accionDeshabilitar = {
+                alarmaSeleccionada?.let {
+                    it.habilitada = false
+                    when(alarmaSeleccionada){
+                        is AlarmaRepetitiva -> viewModel.agregarAlarma(alarmaSeleccionada as AlarmaRepetitiva)
+                        is AlarmaUnica -> viewModel.agregarAlarma(alarmaSeleccionada as AlarmaUnica)
+                    }
+                }
+                dialogoAbierto = false
+            },
+            accionModificar = { /*TODO*/ },
+            accionEliminar = { /*TODO*/ }
+        )
     }
 
     Scaffold(
@@ -61,13 +83,32 @@ fun AlarmasGuardadasScreen(navController: NavController, viewModel: AlarmaViewMo
         backgroundColor = MaterialTheme.colors.primary
     ) {
         if (alarmas.isEmpty()){
+            //TODO Mejorar UI cuando no hay alarmas
             Text("No hay alarmas guardadas", color = Color.Black)
         } else {
             LazyColumn {
-                items(alarmas.toList()){ alarma ->
+                items(alarmas){ alarma ->
                     when(alarma) {
-                        is AlarmaRepetitiva -> AlarmaRepetitivaCardView(alarma) {}
-                        is AlarmaUnica -> AlarmaUnicaCardView(alarma) {}
+                        //TODO Agregar accion al presionar sobre la alarma (Dialog con Deshabilitar, Editar, Eliminar)
+                        is AlarmaRepetitiva -> AlarmaRepetitivaCardView(alarma) {
+                            if (alarma.habilitada) {
+                                alarmaSeleccionada = alarma
+                                dialogoAbierto = true
+                            } else {
+                                alarma.habilitada = true
+                                viewModel.agregarAlarma(alarma)
+                                alarmaSeleccionada = alarma
+                            }
+                        }
+                        is AlarmaUnica -> AlarmaUnicaCardView(alarma) {
+                            alarmaSeleccionada = alarma
+                            if (alarma.habilitada)
+                                dialogoAbierto = true
+                            else {
+                                alarma.habilitada = true
+                                viewModel.agregarAlarma(alarma)
+                            }
+                        }
                     }
                 }
                 item(){

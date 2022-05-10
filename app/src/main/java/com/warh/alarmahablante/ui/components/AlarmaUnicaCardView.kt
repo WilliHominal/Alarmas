@@ -15,7 +15,10 @@ import java.util.*
 
 @Composable
 fun AlarmaUnicaCardView(alarma: AlarmaUnica, accionCardClick: () -> Unit) {
-    val colorTexto = Color.Black
+    val alfaAlarma = if (alarma.habilitada) 1f else 0.5f
+    val colorTexto = Color.Black.copy(alfaAlarma)
+    val colorFondoSecundario = MaterialTheme.colors.secondary.copy(alfaAlarma)
+    val colorFondoSecundarioVariante = MaterialTheme.colors.secondaryVariant.copy(alfaAlarma)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -23,12 +26,11 @@ fun AlarmaUnicaCardView(alarma: AlarmaUnica, accionCardClick: () -> Unit) {
             .clickable { accionCardClick() },
         elevation = 10.dp,
         shape = MaterialTheme.shapes.medium,
-        backgroundColor = MaterialTheme.colors.secondary
     ) {
         Column {
             Row(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.secondaryVariant)
+                    .background(colorFondoSecundarioVariante)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -37,13 +39,13 @@ fun AlarmaUnicaCardView(alarma: AlarmaUnica, accionCardClick: () -> Unit) {
                 Text("#U${alarma.id}", color = colorTexto)
             }
             Surface(
-                color = MaterialTheme.colors.secondary
+                color = colorFondoSecundario
             ){
                 Column(
                     modifier = Modifier.padding(10.dp)
                 ) {
                     Text(alarma.descripcion, color = colorTexto)
-                    Divider(Modifier.padding(vertical = 10.dp), thickness = 1.dp, color = Color.Black)
+                    Divider(Modifier.padding(vertical = 10.dp), thickness = 1.dp, color = colorTexto)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,

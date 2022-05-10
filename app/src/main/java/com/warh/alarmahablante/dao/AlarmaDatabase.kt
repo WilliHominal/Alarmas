@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.warh.alarmahablante.model.AlarmaRepetitiva
 import com.warh.alarmahablante.model.AlarmaUnica
 
-@Database(entities = [AlarmaRepetitiva::class, AlarmaUnica::class], version = 2)
+@Database(entities = [AlarmaRepetitiva::class, AlarmaUnica::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AlarmaDatabase: RoomDatabase() {
     abstract fun AlarmaDao(): AlarmaDao
