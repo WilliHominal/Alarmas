@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
 class AlarmaViewModel(private val alarmaRepository : AlarmaRepository): ViewModel() {
-    val listaAlarmasRepetitivas: LiveData<List<AlarmaRepetitiva>> = alarmaRepository.alarmasRepetitivas.asLiveData()
-    val listaAlarmasUnicas: LiveData<List<AlarmaUnica>> = alarmaRepository.alarmasUnicas.asLiveData()
+
+    val listaAlarmas = MutableLiveData<List<Alarma>>()
 
     fun agregarAlarma(alarma: Alarma){
         viewModelScope.launch(Dispatchers.IO) {
@@ -22,6 +22,13 @@ class AlarmaViewModel(private val alarmaRepository : AlarmaRepository): ViewMode
                 is AlarmaRepetitiva -> alarmaRepository.agregarAlarmaRepetitiva(alarma)
                 is AlarmaUnica -> alarmaRepository.agregarAlarmaUnica(alarma)
             }
+            actualizarAlarmas()
+        }
+    }
+
+    fun actualizarAlarmas(){
+        viewModelScope.launch(Dispatchers.IO) {
+            listaAlarmas.postValue(alarmaRepository.obtenerAlarmas())
         }
     }
 }

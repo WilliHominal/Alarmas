@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun CustomAlertDialog(accionCerrar: () -> Unit, accionDeshabilitar: () -> Unit, accionModificar: () -> Unit, accionEliminar: () -> Unit) {
+fun CustomAlertDialog(habilitada: Boolean = true, accionCerrar: () -> Unit, accionDeshabilitar: () -> Unit, accionModificar: () -> Unit, accionEliminar: () -> Unit) {
     Dialog(
         onDismissRequest = accionCerrar,
     ) {
@@ -43,7 +43,7 @@ fun CustomAlertDialog(accionCerrar: () -> Unit, accionDeshabilitar: () -> Unit, 
 
                 }
             }
-            CustomButton(texto = "Deshabilitar") {
+            CustomButton(texto = if (habilitada) "Deshabilitar" else "Habilitar") {
                 accionDeshabilitar()
             }
             Box(

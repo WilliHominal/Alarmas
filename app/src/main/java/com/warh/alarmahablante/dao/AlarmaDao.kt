@@ -14,7 +14,7 @@ interface AlarmaDao {
     suspend fun borrarAlarmaRepetitiva(alarma: AlarmaRepetitiva)
 
     @Query("SELECT * FROM alarma_repetitiva")
-    fun obtenerAlarmasRepetitivas(): Flow<List<AlarmaRepetitiva>>
+    suspend fun obtenerAlarmasRepetitivas(): List<AlarmaRepetitiva>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun agregarAlarmaUnica(alarma: AlarmaUnica)
@@ -23,5 +23,5 @@ interface AlarmaDao {
     suspend fun borrarAlarmaUnica(alarma: AlarmaUnica)
 
     @Query("SELECT * FROM alarma_unica")
-    fun obtenerAlarmasUnicas(): Flow<List<AlarmaUnica>>
+    suspend fun obtenerAlarmasUnicas(): List<AlarmaUnica>
 }

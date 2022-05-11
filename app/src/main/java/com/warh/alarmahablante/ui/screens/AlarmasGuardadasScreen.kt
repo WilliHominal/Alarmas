@@ -27,29 +27,24 @@ import com.warh.alarmahablante.viewmodel.AlarmaViewModel
 @Composable
 fun AlarmasGuardadasScreen(navController: NavController, viewModel: AlarmaViewModel) {
 
-    var alarmas by remember { mutableStateOf(listOf<Alarma>()) }
+    var alarmas by remember { mutableStateOf<List<Alarma>?>(null) }
 
     var dialogoAbierto by remember { mutableStateOf(false) }
-    var alarmaSeleccionada by remember { mutableStateOf<Alarma?>(null) }
+    var alarmaSeleccionada by remember { mutableStateOf<Alarma?>(null)}
 
-    viewModel.listaAlarmasRepetitivas.observe( LocalLifecycleOwner.current ){
-        val mutableSet: MutableList<Alarma> = alarmas.filterIsInstance<AlarmaUnica>().toMutableList()
-        mutableSet.addAll(it)
-        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }
-    }
+    alarmas?.let{} ?: viewModel.actualizarAlarmas()
 
-    viewModel.listaAlarmasUnicas.observe( LocalLifecycleOwner.current ){
-        val mutableSet: MutableList<Alarma> = alarmas.filterIsInstance<AlarmaRepetitiva>().toMutableList()
-        mutableSet.addAll(it)
-        alarmas = mutableSet.sortedByDescending { x -> x.fechaCreacion }
+    viewModel.listaAlarmas.observe(LocalLifecycleOwner.current){
+        alarmas = it
     }
 
     if (dialogoAbierto) {
         CustomAlertDialog(
+            habilitada = alarmaSeleccionada?.habilitada ?: false,
             accionCerrar = { dialogoAbierto = false },
             accionDeshabilitar = {
                 alarmaSeleccionada?.let {
-                    it.habilitada = false
+                    it.habilitada = !it.habilitada
                     when(alarmaSeleccionada){
                         is AlarmaRepetitiva -> viewModel.agregarAlarma(alarmaSeleccionada as AlarmaRepetitiva)
                         is AlarmaUnica -> viewModel.agregarAlarma(alarmaSeleccionada as AlarmaUnica)
@@ -57,8 +52,9 @@ fun AlarmasGuardadasScreen(navController: NavController, viewModel: AlarmaViewMo
                 }
                 dialogoAbierto = false
             },
-            accionModificar = { /*TODO*/ },
-            accionEliminar = { /*TODO*/ }
+            /*TODO agregar accion modificar y eliminar alarma*/
+            accionModificar = {  },
+            accionEliminar = {  }
         )
     }
 
@@ -82,37 +78,27 @@ fun AlarmasGuardadasScreen(navController: NavController, viewModel: AlarmaViewMo
         },
         backgroundColor = MaterialTheme.colors.primary
     ) {
-        if (alarmas.isEmpty()){
-            //TODO Mejorar UI cuando no hay alarmas
-            Text("No hay alarmas guardadas", color = Color.Black)
-        } else {
-            LazyColumn {
-                items(alarmas){ alarma ->
-                    when(alarma) {
-                        //TODO Agregar accion al presionar sobre la alarma (Dialog con Deshabilitar, Editar, Eliminar)
-                        is AlarmaRepetitiva -> AlarmaRepetitivaCardView(alarma) {
-                            if (alarma.habilitada) {
+        alarmas?.let{ alarmas ->
+            if (alarmas.isEmpty()){
+                //TODO Mejorar UI cuando no hay alarmas
+                Text("No hay alarmas guardadas", color = Color.Black)
+            } else {
+                LazyColumn {
+                    items(alarmas){ alarma ->
+                        when(alarma) {
+                            is AlarmaRepetitiva -> AlarmaRepetitivaCardView(alarma) {
                                 alarmaSeleccionada = alarma
                                 dialogoAbierto = true
-                            } else {
-                                alarma.habilitada = true
-                                viewModel.agregarAlarma(alarma)
-                                alarmaSeleccionada = alarma
                             }
-                        }
-                        is AlarmaUnica -> AlarmaUnicaCardView(alarma) {
-                            alarmaSeleccionada = alarma
-                            if (alarma.habilitada)
+                            is AlarmaUnica -> AlarmaUnicaCardView(alarma) {
+                                alarmaSeleccionada = alarma
                                 dialogoAbierto = true
-                            else {
-                                alarma.habilitada = true
-                                viewModel.agregarAlarma(alarma)
                             }
                         }
                     }
-                }
-                item(){
-                    Spacer(Modifier.padding(bottom = 35.dp))
+                    item(){
+                        Spacer(Modifier.padding(bottom = 35.dp))
+                    }
                 }
             }
         }

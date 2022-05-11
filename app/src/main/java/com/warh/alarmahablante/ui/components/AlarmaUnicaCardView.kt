@@ -19,6 +19,7 @@ fun AlarmaUnicaCardView(alarma: AlarmaUnica, accionCardClick: () -> Unit) {
     val colorTexto = Color.Black.copy(alfaAlarma)
     val colorFondoSecundario = MaterialTheme.colors.secondary.copy(alfaAlarma)
     val colorFondoSecundarioVariante = MaterialTheme.colors.secondaryVariant.copy(alfaAlarma)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
